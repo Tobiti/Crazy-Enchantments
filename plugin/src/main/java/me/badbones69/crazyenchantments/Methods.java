@@ -6,7 +6,6 @@ import me.badbones69.crazyenchantments.api.enums.Messages;
 import me.badbones69.crazyenchantments.api.objects.ItemBuilder;
 import me.badbones69.crazyenchantments.controllers.FireworkDamage;
 import me.badbones69.crazyenchantments.multisupport.AACSupport;
-import me.badbones69.crazyenchantments.multisupport.SpartanSupport;
 import me.badbones69.crazyenchantments.multisupport.Support;
 import me.badbones69.crazyenchantments.multisupport.Support.SupportedPlugins;
 import me.badbones69.crazyenchantments.multisupport.Version;
@@ -531,14 +530,6 @@ public class Methods {
                             if (!player.getName().equalsIgnoreCase(e.getName())) {
                                 en.damage(5D);
                                 if (en instanceof Player) {
-                                    if (SupportedPlugins.SPARTAN.isPluginLoaded()) {
-                                        SpartanSupport.cancelSpeed((Player) player);
-                                        SpartanSupport.cancelFly((Player) player);
-                                        SpartanSupport.cancelClip((Player) player);
-                                        SpartanSupport.cancelNormalMovements((Player) player);
-                                        SpartanSupport.cancelNoFall((Player) player);
-                                        SpartanSupport.cancelJesus((Player) player);
-                                    }
                                     if (SupportedPlugins.AAC.isPluginLoaded()) {
                                         AACSupport.exemptPlayerTime((Player) player);
                                     }
@@ -574,14 +565,6 @@ public class Methods {
                             if (!player.getName().equalsIgnoreCase(e.getName())) {
                                 en.damage(5D);
                                 if (en instanceof Player) {
-                                    if (SupportedPlugins.SPARTAN.isPluginLoaded()) {
-                                        SpartanSupport.cancelSpeed((Player) player);
-                                        SpartanSupport.cancelFly((Player) player);
-                                        SpartanSupport.cancelClip((Player) player);
-                                        SpartanSupport.cancelNormalMovements((Player) player);
-                                        SpartanSupport.cancelNoFall((Player) player);
-                                        SpartanSupport.cancelJesus((Player) player);
-                                    }
                                     if (SupportedPlugins.AAC.isPluginLoaded()) {
                                         AACSupport.exemptPlayerTime((Player) player);
                                     }

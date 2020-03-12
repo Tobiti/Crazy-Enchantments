@@ -4,7 +4,6 @@ import me.badbones69.crazyenchantments.api.CrazyEnchantments;
 import me.badbones69.crazyenchantments.api.enums.CEnchantments;
 import me.badbones69.crazyenchantments.api.events.ArmorEquipEvent;
 import me.badbones69.crazyenchantments.api.managers.WingsManager;
-import me.badbones69.crazyenchantments.multisupport.SpartanSupport;
 import me.badbones69.crazyenchantments.multisupport.Support;
 import me.badbones69.crazyenchantments.multisupport.Support.SupportedPlugins;
 import me.badbones69.crazyenchantments.multisupport.Version;
@@ -69,9 +68,6 @@ public class Boots implements Listener {
     public void onFly(PlayerToggleFlightEvent e) {
         Player player = e.getPlayer();
         if (manager.isWingsEnabled() && ce.hasEnchantment(player.getEquipment().getBoots(), CEnchantments.WINGS) && regionCheck(player) && !areEnemiesNearby(player)) {
-            if (SupportedPlugins.SPARTAN.isPluginLoaded()) {
-                SpartanSupport.cancelFly(player);
-            }
             if (e.isFlying()) {
                 if (player.getAllowFlight()) {
                     e.setCancelled(true);
@@ -118,9 +114,6 @@ public class Boots implements Listener {
     public void onJoin(PlayerJoinEvent e) {
         Player player = e.getPlayer();
         if (manager.isWingsEnabled() && ce.hasEnchantment(player.getEquipment().getBoots(), CEnchantments.WINGS) && regionCheck(player) && !areEnemiesNearby(player)) {
-            if (SupportedPlugins.SPARTAN.isPluginLoaded()) {
-                SpartanSupport.cancelFly(player);
-            }
             player.setAllowFlight(true);
             manager.addFlyingPlayer(player);
         }

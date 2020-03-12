@@ -78,7 +78,7 @@
                 </exclusion>
             </exclusions>
         </dependency>
-        <dependency>
+        <!-- <dependency>
             <groupId>net.sacredlabyrinth.Phaed</groupId>
             <artifactId>PreciousStones</artifactId>
             <version>10.7.2</version>
@@ -89,7 +89,7 @@
             <artifactId>MassiveCraft</artifactId>
             <version>2.13.2</version>
             <scope>provided</scope>
-        </dependency>
+        </dependency> -->
         <!--        <dependency>-->
         <!--            <groupId>com.massivecraft</groupId>-->
         <!--            <artifactId>Factions</artifactId>-->
@@ -97,13 +97,13 @@
         <!--            <scope>system</scope>-->
         <!--            <systemPath>${project.basedir}/src/main/library/Factions.jar</systemPath>-->
         <!--        </dependency>-->
-        <dependency>
+        <!-- <dependency>
             <groupId>de.dustplanet</groupId>
             <artifactId>SilkSpawners</artifactId>
             <version>5.1.0</version>
             <scope>provided</scope>
         </dependency>
-        <dependency> <!-- https://www.spigotmc.org/resources/60063 -->
+        <dependency>
             <groupId>de.candc</groupId>
             <artifactId>SilkSpawners</artifactId>
             <version>1.6</version>
@@ -114,7 +114,7 @@
             <artifactId>Feudal</artifactId>
             <version>1.14.1</version>
             <scope>provided</scope>
-        </dependency>
+        </dependency> -->
         <dependency>
             <groupId>com.wasteofplastic</groupId>
             <artifactId>askyblock</artifactId>
@@ -127,19 +127,19 @@
             <version>3.0.8.2</version>
             <scope>provided</scope>
         </dependency>
-        <dependency>
+        <!-- <dependency>
             <groupId>org.kingdoms.main</groupId>
             <artifactId>Kingdoms</artifactId>
             <version>13.2.40</version>
             <scope>provided</scope>
-        </dependency>
+        </dependency> -->
         <dependency>
             <groupId>com.github.TechFortress</groupId>
             <artifactId>GriefPrevention</artifactId>
             <version>16.12.alpha</version>
             <scope>provided</scope>
         </dependency>
-        <dependency>
+        <!-- <dependency>
             <groupId>me.vagdedes.spartan</groupId>
             <artifactId>Spartan</artifactId>
             <version>Build-269</version>
@@ -150,8 +150,8 @@
             <artifactId>StackMob-3</artifactId>
             <version>4.0.2</version>
             <scope>provided</scope>
-        </dependency>
-        <dependency><!-- FactionsUUID -->
+        </dependency> -->
+        <dependency>
             <groupId>com.massivecraft</groupId>
             <artifactId>Factions</artifactId>
             <version>1.6.9.5-U0.5.0</version>
@@ -170,18 +170,24 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.8.6</version>
+            <scope>provided</scope>
+        </dependency>
+        <!-- <dependency>
             <groupId>DAKATA.Main</groupId>
             <artifactId>DakataAntiCheat</artifactId>
             <version>BETA-1.8</version>
             <scope>provided</scope>
-        </dependency>
+        </dependency> -->
         <dependency>
             <groupId>de.janmm14</groupId>
             <artifactId>aac-api</artifactId>
             <version>3.3.12</version>
             <scope>provided</scope>
         </dependency>
-        <dependency>
+       <!-- <dependency>
             <groupId>org.generallib.main</groupId>
             <artifactId>GeneralLib</artifactId>
             <version>0.1.4</version>
@@ -205,12 +211,12 @@
             <version>3.1.4-R2</version>
             <scope>provided</scope>
         </dependency>
-        <dependency><!-- Factions3 -->
+        <dependency>
             <groupId>com.massivecraft.factions</groupId>
             <artifactId>Factions</artifactId>
             <version>3.2.0</version>
             <scope>provided</scope>
-        </dependency>
+        </dependency>-->
         <dependency>
             <groupId>com.github.OmerBenGera</groupId>
             <artifactId>WildStackerAPI</artifactId>

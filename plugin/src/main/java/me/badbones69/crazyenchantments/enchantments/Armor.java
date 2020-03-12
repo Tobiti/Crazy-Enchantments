@@ -257,9 +257,6 @@ public class Armor implements Listener {
                                             if (SupportedPlugins.NO_CHEAT_PLUS.isPluginLoaded()) {
                                                 NoCheatPlusSupport.exemptPlayer(player);
                                             }
-                                            if (SupportedPlugins.SPARTAN.isPluginLoaded()) {
-                                                SpartanSupport.cancelNoSwing(player);
-                                            }
                                             if (SupportedPlugins.AAC.isPluginLoaded()) {
                                                 AACSupport.exemptPlayer(player);
                                             }
@@ -443,9 +440,6 @@ public class Armor implements Listener {
                                         Bukkit.getPluginManager().callEvent(event);
                                         if (!event.isCancelled()) {
                                             int foodIncress = 1;
-                                            if (SupportedPlugins.SPARTAN.isPluginLoaded()) {
-                                                SpartanSupport.cancelFastEat(player);
-                                            }
                                             if (player.getFoodLevel() + foodIncress <= 20) {
                                                 player.setFoodLevel(player.getFoodLevel() + foodIncress);
                                             }

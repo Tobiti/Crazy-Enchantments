@@ -6,7 +6,6 @@ import me.badbones69.crazyenchantments.api.enums.CEnchantments;
 import me.badbones69.crazyenchantments.api.events.EnchantmentUseEvent;
 import me.badbones69.crazyenchantments.api.objects.CEnchantment;
 import me.badbones69.crazyenchantments.api.objects.ItemBuilder;
-import me.badbones69.crazyenchantments.multisupport.SpartanSupport;
 import me.badbones69.crazyenchantments.multisupport.Support;
 import me.badbones69.crazyenchantments.multisupport.Support.SupportedPlugins;
 import org.bukkit.Bukkit;
@@ -60,9 +59,6 @@ public class Axes implements Listener {
                         Bukkit.getPluginManager().callEvent(event);
                         if (!event.isCancelled()) {
                             int food = 2 * ce.getLevel(item, CEnchantments.FEEDME);
-                            if (SupportedPlugins.SPARTAN.isPluginLoaded()) {
-                                SpartanSupport.cancelFastEat(damager);
-                            }
                             if (damager.getFoodLevel() + food < 20) {
                                 damager.setFoodLevel((int) (damager.getSaturation() + food));
                             }

@@ -84,15 +84,6 @@ public class Main extends JavaPlugin implements Listener {
         if (SupportedPlugins.AAC.isPluginLoaded()) {
             pm.registerEvents(new AACSupport(), this);
         }
-        if (SupportedPlugins.SILK_SPAWNERS.isPluginLoaded()) {
-            pm.registerEvents(new SilkSpawnerSupport(), this);
-        }
-        if (SupportedPlugins.SILK_SPAWNERS_CANDC.isPluginLoaded()) {
-            pm.registerEvents(new SilkSpawnersCandcSupport(), this);
-        }
-        if (SupportedPlugins.DAKATA.isPluginLoaded()) {
-            pm.registerEvents(new DakataAntiCheatSupport(), this);
-        }
         //==========================================================================\\
         new Metrics(this);// Starts up bStats
         new BukkitRunnable() {

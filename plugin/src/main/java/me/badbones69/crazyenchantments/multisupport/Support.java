@@ -20,28 +20,10 @@ public class Support {
     private static PlotSquaredVersion plotSquaredVersion = ce.getPlotSquaredSupport();
     
     public static boolean inTerritory(Player player) {
-        if (SupportedPlugins.FACTIONS_UUID.isPluginLoaded() && FactionsUUID.inTerritory(player)) {
-            return true;
-        }
-        if (SupportedPlugins.FACTIONS3.isPluginLoaded() && Factions3Support.inTerritory(player)) {
-            return true;
-        }
-        if (SupportedPlugins.FACTIONS_MASSIVE_CRAFT.isPluginLoaded() && FactionsSupport.inTerritory(player)) {
-            return true;
-        }
-        if (SupportedPlugins.FEUDAL.isPluginLoaded() && FeudalSupport.inTerritory(player)) {
-            return true;
-        }
         if (SupportedPlugins.ASKYBLOCK.isPluginLoaded() && ASkyBlockSupport.inTerritory(player)) {
             return true;
         }
         if (SupportedPlugins.ACID_ISLAND.isPluginLoaded() && AcidIslandSupport.inTerritory(player)) {
-            return true;
-        }
-        if (SupportedPlugins.KINGDOMS.isPluginLoaded() && KingdomSupport.inTerritory(player)) {
-            return true;
-        }
-        if (SupportedPlugins.TOWNY.isPluginLoaded() && TownySupport.inTerritory(player)) {
             return true;
         }
         if (SupportedPlugins.GRIEF_PREVENTION.isPluginLoaded() && GriefPreventionSupport.inTerritory(player)) {
@@ -50,38 +32,17 @@ public class Support {
         if (SupportedPlugins.PLOT_SQUARED.isPluginLoaded() && plotSquaredVersion.inTerritory(player)) {
             return true;
         }
-        return SupportedPlugins.LEGACY_FACTIONS.isPluginLoaded() && LegacyFactionsSupport.inTerritory(player);
+        return false;
     }
     
     public static boolean isFriendly(Entity p, Entity o) {
         if (p instanceof Player && o instanceof Player) {
             Player player = (Player) p;
             Player other = (Player) o;
-            if (SupportedPlugins.FACTIONS_UUID.isPluginLoaded() && FactionsUUID.isFriendly(player, other)) {
-                return true;
-            }
-            if (SupportedPlugins.FACTIONS3.isPluginLoaded() && Factions3Support.isFriendly(player, other)) {
-                return true;
-            }
-            if (SupportedPlugins.FACTIONS_MASSIVE_CRAFT.isPluginLoaded() && FactionsSupport.isFriendly(player, other)) {
-                return true;
-            }
-            if (SupportedPlugins.FEUDAL.isPluginLoaded() && FeudalSupport.isFrendly(player, other)) {
-                return true;
-            }
             if (SupportedPlugins.ASKYBLOCK.isPluginLoaded() && ASkyBlockSupport.isFriendly(player, other)) {
                 return true;
             }
             if (SupportedPlugins.ACID_ISLAND.isPluginLoaded() && AcidIslandSupport.isFriendly(player, other)) {
-                return true;
-            }
-            if (SupportedPlugins.KINGDOMS.isPluginLoaded() && KingdomSupport.isFriendly(player, other)) {
-                return true;
-            }
-            if (SupportedPlugins.TOWNY.isPluginLoaded() && TownySupport.isFriendly(player, other)) {
-                return true;
-            }
-            if (SupportedPlugins.LEGACY_FACTIONS.isPluginLoaded() && LegacyFactionsSupport.isFriendly(player, other)) {
                 return true;
             }
             if (SupportedPlugins.MCMMO.isPluginLoaded() && MCMMOParty.isFriendly(player, other)) {
@@ -103,29 +64,11 @@ public class Support {
     
     public static boolean canBreakBlock(Player player, Block block) {
         if (player != null) {
-            if (SupportedPlugins.FACTIONS_UUID.isPluginLoaded() && !FactionsUUID.canBreakBlock(player, block)) {
-                return false;
-            }
-            if (SupportedPlugins.FACTIONS3.isPluginLoaded() && !Factions3Support.canBreakBlock(player, block)) {
-                return false;
-            }
-            if (SupportedPlugins.FACTIONS_MASSIVE_CRAFT.isPluginLoaded() && !FactionsSupport.canBreakBlock(player, block)) {
-                return false;
-            }
-            if (SupportedPlugins.FEUDAL.isPluginLoaded() && !FeudalSupport.canBreakBlock(player, block)) {
-                return false;
-            }
-            if (SupportedPlugins.KINGDOMS.isPluginLoaded() && !KingdomSupport.canBreakBlock(player, block)) {
-                return false;
-            }
             if (SupportedPlugins.GRIEF_PREVENTION.isPluginLoaded() && !GriefPreventionSupport.canBreakBlock(player, block)) {
                 return false;
             }
-            if (SupportedPlugins.PRECIOUS_STONES.isPluginLoaded() && !PreciousStonesSupport.canBreakBlock(player, block)) {
-                return false;
-            }
         }
-        return !SupportedPlugins.LEGACY_FACTIONS.isPluginLoaded() || LegacyFactionsSupport.canBreakBlock(player, block);
+        return true;
     }
     
     public static boolean allowsPVP(Location loc) {
@@ -164,9 +107,6 @@ public class Support {
         }
         if (SupportedPlugins.MOB_STACKER_2.isPluginLoaded()) {
             MobStacker2.noStack(en);
-        }
-        if (SupportedPlugins.STACK_MOB.isPluginLoaded()) {
-            StackMobSupport.preventStacking(en);
         }
     }
     

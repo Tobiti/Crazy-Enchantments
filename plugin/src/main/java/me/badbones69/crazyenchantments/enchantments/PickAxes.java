@@ -12,7 +12,6 @@ import me.badbones69.crazyenchantments.api.objects.ItemBuilder;
 import me.badbones69.crazyenchantments.api.objects.TelepathyDrop;
 import me.badbones69.crazyenchantments.multisupport.AACSupport;
 import me.badbones69.crazyenchantments.multisupport.NoCheatPlusSupport;
-import me.badbones69.crazyenchantments.multisupport.SpartanSupport;
 import me.badbones69.crazyenchantments.multisupport.Support.SupportedPlugins;
 import me.badbones69.crazyenchantments.multisupport.Version;
 import org.bukkit.Bukkit;
@@ -92,11 +91,6 @@ public class PickAxes implements Listener {
                             HashMap<ItemStack, Integer> drops = new HashMap<>();
                             if (SupportedPlugins.NO_CHEAT_PLUS.isPluginLoaded()) {
                                 NoCheatPlusSupport.exemptPlayer(player);
-                            }
-                            if (SupportedPlugins.SPARTAN.isPluginLoaded()) {
-                                SpartanSupport.cancelNucker(player);
-                                SpartanSupport.cancelNoSwing(player);
-                                SpartanSupport.cancelBlockReach(player);
                             }
                             if (SupportedPlugins.AAC.isPluginLoaded()) {
                                 AACSupport.exemptPlayer(player);
