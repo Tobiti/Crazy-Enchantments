@@ -196,6 +196,7 @@ public class Support {
         MOB_STACKER("MobStacker"),
         MOB_STACKER_2("MobStacker2"),
         STACK_MOB("StackMob"),
+        WILDSTACKER("WildStacker"),
         MEGA_SKILLS("MegaSkills"),
         PRECIOUS_STONES("PreciousStones"),
         PLOT_SQUARED("PlotSquared");

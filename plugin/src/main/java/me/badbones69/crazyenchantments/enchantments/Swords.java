@@ -451,6 +451,11 @@ public class Swords implements Listener {
                         }
                     }
                 }
+
+                if(Support.SupportedPlugins.WILDSTACKER.isPluginLoaded()){
+                    if(!(e.getEntity() instanceof Player)){
+                    }
+                }
             }
         }
     }
