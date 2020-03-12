@@ -23,6 +23,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.ExperienceOrb;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -43,6 +44,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+
+import com.bgsoftware.wildstacker.api.WildStackerAPI;
+import com.bgsoftware.wildstacker.api.enums.UnstackResult;
+import com.bgsoftware.wildstacker.api.objects.StackedEntity;
 
 public class Swords implements Listener {
     
@@ -388,6 +393,31 @@ public class Swords implements Listener {
                             en.addPotionEffect(new PotionEffect(PotionEffectType.HUNGER, 10 * 20, 1));
                         }
                     }
+                    if(((LivingEntity)e.getEntity()).getHealth() - e.getFinalDamage() <= 0){
+                        if(Support.SupportedPlugins.WILDSTACKER.isPluginLoaded()){
+                            if(!(e.getEntity() instanceof Player) && ce.hasEnchantment(item, CEnchantments.STACKKILL)){
+                                EnchantmentUseEvent event = new EnchantmentUseEvent(damager, CEnchantments.STACKKILL, item);
+                                Bukkit.getPluginManager().callEvent(event);
+                                if (!event.isCancelled()) {
+                                    StackedEntity stackedEntity = WildStackerAPI.getStackedEntity((LivingEntity) e.getEntity());
+                                    if(stackedEntity != null) {
+                                        int kills = 10 * ce.getLevel(item, CEnchantments.STACKKILL);
+                                        kills = Math.min(stackedEntity.getStackAmount(), kills);
+                                        UnstackResult rs = stackedEntity.runUnstack(kills);
+                                        e.setCancelled(true);
+
+                                        EntityDeathEvent deathEvent = new EntityDeathEvent((LivingEntity) e.getEntity(), stackedEntity.getDrops(0, kills), stackedEntity.getExp(kills, 2));
+                                        Bukkit.getPluginManager().callEvent(event);
+                                        
+                                        for (ItemStack drop : deathEvent.getDrops()) {
+                                            e.getEntity().getWorld().dropItemNaturally(e.getEntity().getLocation(), drop);
+                                        }
+                                        e.getEntity().getWorld().spawn(e.getEntity().getLocation(), ExperienceOrb.class).setExperience(stackedEntity.getExp(kills, 5));
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -449,11 +479,6 @@ public class Swords implements Listener {
                                 ((Player) entity).addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 10 * 20, 1));
                             }
                         }
-                    }
-                }
-
-                if(Support.SupportedPlugins.WILDSTACKER.isPluginLoaded()){
-                    if(!(e.getEntity() instanceof Player)){
                     }
                 }
             }
