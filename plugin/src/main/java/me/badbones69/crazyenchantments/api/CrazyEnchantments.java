@@ -13,11 +13,8 @@ import me.badbones69.crazyenchantments.controllers.ProtectionCrystal;
 import me.badbones69.crazyenchantments.controllers.Scrambler;
 import me.badbones69.crazyenchantments.controllers.ScrollControl;
 import me.badbones69.crazyenchantments.enchantments.Boots;
-import me.badbones69.crazyenchantments.multisupport.NMSSupport;
-import me.badbones69.crazyenchantments.multisupport.NMS_v1_12_2_Down;
-import me.badbones69.crazyenchantments.multisupport.NMS_v1_13_Up;
+import me.badbones69.crazyenchantments.multisupport.*;
 import me.badbones69.crazyenchantments.multisupport.Support.SupportedPlugins;
-import me.badbones69.crazyenchantments.multisupport.Version;
 import me.badbones69.crazyenchantments.multisupport.nbttagapi.NBTItem;
 import me.badbones69.crazyenchantments.multisupport.plotsquared.PlotSquared;
 import me.badbones69.crazyenchantments.multisupport.plotsquared.PlotSquaredLegacy;
@@ -50,8 +47,9 @@ public class CrazyEnchantments {
     private int rageMaxLevel;
     private boolean gkitzToggle;
     private boolean useUnsafeEnchantments;
-    private boolean useNewSounds;
-    private boolean useNewMaterial;
+    private boolean useNewSounds = Version.isNewer(Version.v1_8_R3);
+    private boolean useHealthAttributes = Version.isNewer(Version.v1_8_R3);
+    private boolean useNewMaterial = Version.isNewer(Version.v1_12_R1);
     private boolean breakRageOnDamage;
     private boolean enchantStackedItems;
     private ItemBuilder enchantmentBook;
@@ -64,6 +62,7 @@ public class CrazyEnchantments {
     private WingsManager wingsManager;
     private BowEnchantmentManager bowManager;
     private ArmorEnchantmentManager armorManager;
+    private AllyManager allyManager;
     private WorldGuardVersion worldGuardVersion;
     private PlotSquaredVersion plotSquaredVersion;
     private List<Category> categories = new ArrayList<>();
@@ -88,6 +87,7 @@ public class CrazyEnchantments {
         gkitz.clear();
         registeredEnchantments.clear();
         categories.clear();
+        SupportedPlugins.updatePluginStates();
         plugin = Bukkit.getPluginManager().getPlugin("CrazyEnchantments");
         //Loads the blacksmith manager
         blackSmithManager = BlackSmithManager.getInstance();
@@ -96,9 +96,7 @@ public class CrazyEnchantments {
         infoMenuManager = InfoMenuManager.getInstance();
         infoMenuManager.load();
         CEnchantments.invalidateCachedEnchants();
-        useNewSounds = Version.isNewer(Version.v1_8_R3);
-        useNewMaterial = Version.isNewer(Version.v1_12_R1);
-        nmsSupport = Version.isNewer(Version.v1_12_R1) ? new NMS_v1_13_Up() : new NMS_v1_12_2_Down();
+        nmsSupport = useNewMaterial ? new NMS_v1_13_Up() : new NMS_v1_12_2_Down();
         FileConfiguration config = Files.CONFIG.getFile();
         FileConfiguration gkit = Files.GKITZ.getFile();
         FileConfiguration enchants = Files.ENCHANTMENTS.getFile();
@@ -229,14 +227,18 @@ public class CrazyEnchantments {
         //Loads the settings for the armor enchantments.
         armorManager = ArmorEnchantmentManager.getInstance();
         armorManager.load();
+        //Loads the settings for the ally enchantments.
+        allyManager = AllyManager.getInstance();
+        allyManager.load();
         //Starts the wings task
         Boots.startWings();
         if (SupportedPlugins.WORLD_GUARD.isPluginLoaded() && SupportedPlugins.WORLD_EDIT.isPluginLoaded()) {
-            worldGuardVersion = Version.isNewer(Version.v1_12_R1) ? new WorldGuard_v7() : new WorldGuard_v6();
+            worldGuardVersion = useNewMaterial ? new WorldGuard_v7() : new WorldGuard_v6();
         }
         if (SupportedPlugins.PLOT_SQUARED.isPluginLoaded()) {
-            plotSquaredVersion = Version.isNewer(Version.v1_12_R1) ? new PlotSquared() : new PlotSquaredLegacy();
+            plotSquaredVersion = useNewMaterial ? new PlotSquared() : new PlotSquaredLegacy();
         }
+        Support.getInstance().load();
     }
     
     /**
@@ -379,10 +381,18 @@ public class CrazyEnchantments {
     
     /**
      * Get the armor enchantments manager.
-     * @return The instance of the bow manager.
+     * @return The instance of the armor manager.
      */
     public ArmorEnchantmentManager getArmorManager() {
         return armorManager;
+    }
+    
+    /**
+     * Get the ally enchantments manager.
+     * @return The instance of the ally manager.
+     */
+    public AllyManager getAllyManager() {
+        return allyManager;
     }
     
     /**
@@ -406,6 +416,14 @@ public class CrazyEnchantments {
      */
     public boolean useNewMaterial() {
         return useNewMaterial;
+    }
+    
+    /**
+     *
+     * @return true if needs to use health attributes and false if otherwise.
+     */
+    public boolean useHealthAttributes() {
+        return useHealthAttributes;
     }
     
     /**
