@@ -5,7 +5,6 @@ import me.badbones69.crazyenchantments.api.managers.WingsManager;
 import me.badbones69.crazyenchantments.multisupport.factions.*;
 import me.badbones69.crazyenchantments.multisupport.mobstackers.MobStacker;
 import me.badbones69.crazyenchantments.multisupport.mobstackers.MobStacker2;
-import me.badbones69.crazyenchantments.multisupport.mobstackers.StackMobSupport;
 import me.badbones69.crazyenchantments.multisupport.plotsquared.PlotSquaredVersion;
 import me.badbones69.crazyenchantments.multisupport.skyblocks.ASkyBlockSupport;
 import me.badbones69.crazyenchantments.multisupport.skyblocks.AcidIslandSupport;
@@ -84,7 +83,6 @@ public class Support {
             if (factionPlugin != null && factionPlugin.inTerritory(player)) {
                 return false;
             }
-            return !SupportedPlugins.PRECIOUS_STONES.isPluginLoaded() || PreciousStonesSupport.canBreakBlock(player, block);
         }
         return true;
     }
@@ -125,9 +123,6 @@ public class Support {
         }
         if (SupportedPlugins.MOB_STACKER_2.isPluginLoaded()) {
             MobStacker2.noStack(entity);
-        }
-        if (SupportedPlugins.STACK_MOB.isPluginLoaded()) {
-            StackMobSupport.preventStacking(entity);
         }
     }
     
@@ -226,30 +221,6 @@ public class Support {
             for (SupportedPlugins supportedPlugin : values()) {
                 if (supportedPlugin.isPluginLoaded()) {
                     switch (supportedPlugin) {
-                        case LEGACY_FACTIONS:
-                            factionPlugin = new LegacyFactionsSupport();
-                            return;
-                        case KINGDOMS:
-                            factionPlugin = new KingdomSupport();
-                            return;
-                        case GRIEF_PREVENTION:
-                            factionPlugin = new GriefPreventionSupport();
-                            return;
-                        case FEUDAL:
-                            factionPlugin = new FeudalSupport();
-                            return;
-                        case TOWNY:
-                            factionPlugin = new TownySupport();
-                            return;
-                        case FACTIONS3:
-                            factionPlugin = new Factions3Support();
-                            return;
-                        case FACTIONS_MASSIVE_CRAFT:
-                            factionPlugin = new FactionsSupport();
-                            return;
-                        case FACTIONS_UUID:
-                            factionPlugin = new FactionsUUID();
-                            return;
                         case SABER_FACTIONS:
                             factionPlugin = new SaberFactionsSupport();
                             return;

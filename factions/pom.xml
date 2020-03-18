@@ -26,13 +26,13 @@
             <version>1.15.2-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
-        <dependency>
+        <!--<dependency>
             <groupId>com.massivecraft</groupId>
             <artifactId>MassiveCraft</artifactId>
             <version>2.13.2</version>
             <scope>provided</scope>
         </dependency>
-        <dependency><!-- FactionsUUID -->
+        <dependency>
             <groupId>com.massivecraft</groupId>
             <artifactId>Factions</artifactId>
             <version>1.6.9.5-U0.5.0</version>
@@ -44,12 +44,12 @@
                 </exclusion>
             </exclusions>
         </dependency>
-        <dependency><!-- Factions3 -->
+        <dependency>
             <groupId>com.massivecraft.factions</groupId>
             <artifactId>Factions</artifactId>
             <version>3.2.0</version>
             <scope>provided</scope>
-        </dependency>
+        </dependency>-->
     </dependencies>
 
 </project>
