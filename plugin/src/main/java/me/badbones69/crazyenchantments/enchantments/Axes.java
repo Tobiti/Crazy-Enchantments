@@ -8,6 +8,7 @@ import me.badbones69.crazyenchantments.api.objects.CEnchantment;
 import me.badbones69.crazyenchantments.api.objects.ItemBuilder;
 import me.badbones69.crazyenchantments.multisupport.Support;
 import me.badbones69.crazyenchantments.multisupport.Support.SupportedPlugins;
+import me.badbones69.crazyenchantments.multisupport.anticheats.SpartanSupport;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -27,11 +28,12 @@ import java.util.List;
 public class Axes implements Listener {
     
     private CrazyEnchantments ce = CrazyEnchantments.getInstance();
+    private Support support = Support.getInstance();
     
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerDamage(EntityDamageByEntityEvent e) {
         if (e.isCancelled() || ce.isIgnoredEvent(e)) return;
-        if (Support.isFriendly(e.getDamager(), e.getEntity())) return;
+        if (support.isFriendly(e.getDamager(), e.getEntity())) return;
         if (e.getEntity() instanceof LivingEntity) {
             LivingEntity en = (LivingEntity) e.getEntity();
             if (e.getDamager() instanceof Player) {
@@ -96,7 +98,7 @@ public class Axes implements Listener {
                         Bukkit.getPluginManager().callEvent(event);
                         if (!event.isCancelled()) {
                             for (Entity entity : damager.getNearbyEntities(3, 3, 3)) {
-                                if (!Support.isFriendly(damager, entity)) {
+                                if (!support.isFriendly(damager, entity)) {
                                     entity.setVelocity(entity.getLocation().toVector().subtract(damager.getLocation().toVector()).normalize().setY(.5));
                                 }
                             }
@@ -110,7 +112,7 @@ public class Axes implements Listener {
     
     @EventHandler
     public void onPlayerDeath(PlayerDeathEvent e) {
-        if (!Support.allowsPVP(e.getEntity().getLocation())) return;
+        if (!support.allowsPVP(e.getEntity().getLocation())) return;
         if (e.getEntity().getKiller() instanceof Player) {
             Player damager = e.getEntity().getKiller();
             Player player = e.getEntity();

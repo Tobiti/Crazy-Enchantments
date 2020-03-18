@@ -8,23 +8,29 @@ import me.badbones69.crazyenchantments.api.events.*;
 import me.badbones69.crazyenchantments.api.objects.ArmorEnchantment;
 import me.badbones69.crazyenchantments.api.objects.PotionEffects;
 import me.badbones69.crazyenchantments.controllers.ProtectionCrystal;
-import me.badbones69.crazyenchantments.multisupport.*;
+import me.badbones69.crazyenchantments.multisupport.Support;
 import me.badbones69.crazyenchantments.multisupport.Support.SupportedPlugins;
+import me.badbones69.crazyenchantments.multisupport.Version;
+import me.badbones69.crazyenchantments.multisupport.anticheats.AACSupport;
+import me.badbones69.crazyenchantments.multisupport.anticheats.NoCheatPlusSupport;
+import me.badbones69.crazyenchantments.multisupport.anticheats.SpartanSupport;
 import me.badbones69.crazyenchantments.multisupport.particles.ParticleEffect;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.attribute.Attribute;
-import org.bukkit.entity.*;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.*;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.event.world.ChunkUnloadEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -37,21 +43,10 @@ import java.util.Map.Entry;
 
 public class Armor implements Listener {
     
-    private static HashMap<Player, List<LivingEntity>> mobs = new HashMap<>();
     private List<Player> fall = new ArrayList<>();
     private HashMap<Player, HashMap<CEnchantments, Calendar>> timer = new HashMap<>();
-    private HashMap<Player, Calendar> mobTimer = new HashMap<>();
     private CrazyEnchantments ce = CrazyEnchantments.getInstance();
-    
-    public static Map<Player, List<LivingEntity>> getAllies() {
-        return mobs;
-    }
-    
-    public static void removeAllies() {
-        for (Entry<Player, List<LivingEntity>> player : mobs.entrySet()) {
-            player.getValue().forEach(Entity :: remove);
-        }
-    }
+    private Support support = Support.getInstance();
     
     @EventHandler
     public void onEquip(ArmorEquipEvent e) {
@@ -116,7 +111,7 @@ public class Armor implements Listener {
         new BukkitRunnable() {
             @Override
             public void run() {
-                if (Support.isFriendly(e.getDamager(), e.getEntity())) return;
+                if (support.isFriendly(e.getDamager(), e.getEntity())) return;
                 if (e.getDamager() instanceof LivingEntity && e.getEntity() instanceof Player) {
                     final Player player = (Player) e.getEntity();
                     final LivingEntity damager = (LivingEntity) e.getDamager();
@@ -193,7 +188,8 @@ public class Armor implements Listener {
                                         Bukkit.getPluginManager().callEvent(event);
                                         if (!event.isCancelled()) {
                                             double heal = ce.getLevel(armor, CEnchantments.ENLIGHTENED);
-                                            double maxHealth = player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue();
+                                            //Uses getValue as if the player has health boost it is modifying the base so the value after the modifier is needed.
+                                            double maxHealth = ce.useHealthAttributes() ? player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue() : player.getMaxHealth();
                                             if (player.getHealth() + heal < maxHealth) {
                                                 player.setHealth(player.getHealth() + heal);
                                             }
@@ -265,7 +261,7 @@ public class Armor implements Listener {
                                                 ce.addIgnoredEvent(damageByEntityEvent);
                                                 ce.addIgnoredUUID(player.getUniqueId());
                                                 Bukkit.getPluginManager().callEvent(damageByEntityEvent);
-                                                if (!damageByEntityEvent.isCancelled() && Support.allowsPVP(en.getLocation()) && !Support.isFriendly(player, en)) {
+                                                if (!damageByEntityEvent.isCancelled() && support.allowsPVP(en.getLocation()) && !support.isFriendly(player, en)) {
                                                     en.damage(5D);
                                                 }
                                                 ce.removeIgnoredEvent(damageByEntityEvent);
@@ -295,7 +291,7 @@ public class Armor implements Listener {
                                         for (Entity entity : damager.getNearbyEntities(radius, radius, radius)) {
                                             if (entity instanceof Player) {
                                                 Player other = (Player) entity;
-                                                if (Support.isFriendly(damager, other)) {
+                                                if (support.isFriendly(damager, other)) {
                                                     players++;
                                                 }
                                             }
@@ -325,10 +321,10 @@ public class Armor implements Listener {
             @Override
             public void run() {
                 if (!player.canSee(other) || !other.canSee(player)) return;
-                if (Support.isVanished(player) || Support.isVanished(other)) return;
+                if (support.isVanished(player) || support.isVanished(other)) return;
                 CEnchantments enchant = e.getEnchantment();
                 int level = e.getLevel();
-                if (Support.allowsPVP(other.getLocation()) && !Support.isFriendly(player, other) && !Methods.hasPermission(other, "bypass.aura", false)) {
+                if (support.allowsPVP(other.getLocation()) && !support.isFriendly(player, other) && !Methods.hasPermission(other, "bypass.aura", false)) {
                     Calendar cal = Calendar.getInstance();
                     HashMap<CEnchantments, Calendar> effect = new HashMap<>();
                     if (timer.containsKey(other)) {
@@ -411,7 +407,8 @@ public class Armor implements Listener {
                             if (CEnchantments.NURSERY.isActivated() && ce.hasEnchantment(armor, CEnchantments.NURSERY)) {
                                 int heal = 1;
                                 if (CEnchantments.NURSERY.chanceSuccessful(armor)) {
-                                    double maxHealth = player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue();
+                                    //Uses getValue as if the player has health boost it is modifying the base so the value after the modifier is needed.
+                                    double maxHealth = ce.useHealthAttributes() ? player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue() : player.getMaxHealth();
                                     if (maxHealth > player.getHealth()) {
                                         new BukkitRunnable() {
                                             @Override
@@ -459,7 +456,7 @@ public class Armor implements Listener {
                                         for (Entity entity : player.getNearbyEntities(radius, radius, radius)) {
                                             if (entity instanceof Player) {
                                                 Player other = (Player) entity;
-                                                if (Support.isFriendly(player, other)) {
+                                                if (support.isFriendly(player, other)) {
                                                     AngelUseEvent event = new AngelUseEvent(player, armor);
                                                     Bukkit.getPluginManager().callEvent(event);
                                                     if (!event.isCancelled()) {
@@ -492,7 +489,7 @@ public class Armor implements Listener {
             public void run() {
                 if (!(player.getKiller() instanceof Player)) return;
                 Player killer = player.getKiller();
-                if (!Support.allowsPVP(player.getLocation())) return;
+                if (!support.allowsPVP(player.getLocation())) return;
                 if (CEnchantments.SELFDESTRUCT.isActivated()) {
                     for (ItemStack item : player.getEquipment().getArmorContents()) {
                         if (ce.hasEnchantments(item) && ce.hasEnchantment(item, CEnchantments.SELFDESTRUCT.getEnchantment())) {
@@ -545,136 +542,6 @@ public class Armor implements Listener {
         }
     }
     
-    @EventHandler
-    public void onAllyTarget(EntityTargetEvent e) {
-        if (e.getEntity() instanceof LivingEntity) {
-            for (Entry<Player, List<LivingEntity>> mobList : mobs.entrySet()) {
-                if (mobList.getValue().contains(e.getEntity()) && e.getTarget() != null &&
-                mobList.getKey().getName().equals(e.getTarget().getName())) {
-                    e.setCancelled(true);
-                }
-            }
-        }
-    }
-    
-    @EventHandler(priority = EventPriority.MONITOR)
-    public void onAllySpawn(EntityDamageByEntityEvent e) {
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                if (!e.isCancelled() && !ce.isIgnoredEvent(e)) {
-                    Calendar rightNow = Calendar.getInstance();
-                    if (e.getEntity() instanceof Player && e.getDamager() instanceof LivingEntity) {// Player gets attacked
-                        Player player = (Player) e.getEntity();
-                        LivingEntity en = (LivingEntity) e.getDamager();
-                        if (!mobs.containsKey(player)) {
-                            for (ItemStack item : player.getEquipment().getArmorContents()) {
-                                // Spawn allies when getting attacked
-                                if (ce.hasEnchantments(item) && !mobs.containsKey(player) && (!mobTimer.containsKey(player) || (mobTimer.containsKey(player) && rightNow.after(mobTimer.get(player))))) {
-                                    if (CEnchantments.TAMER.isActivated() && ce.hasEnchantment(item, CEnchantments.TAMER)) {
-                                        int power = ce.getLevel(item, CEnchantments.TAMER);
-                                        spawnAllies(player, en, EntityType.WOLF, power);
-                                    }
-                                    if (CEnchantments.GUARDS.isActivated() && ce.hasEnchantment(item, CEnchantments.GUARDS)) {
-                                        int power = ce.getLevel(item, CEnchantments.GUARDS);
-                                        spawnAllies(player, en, EntityType.IRON_GOLEM, power);
-                                    }
-                                    if (en instanceof Player) {
-                                        if (CEnchantments.NECROMANCER.isActivated() && ce.hasEnchantment(item, CEnchantments.NECROMANCER)) {
-                                            int power = ce.getLevel(item, CEnchantments.NECROMANCER);
-                                            spawnAllies(player, en, EntityType.ZOMBIE, power * 2);
-                                        }
-                                        if (CEnchantments.INFESTATION.isActivated() && ce.hasEnchantment(item, CEnchantments.INFESTATION)) {
-                                            int power = ce.getLevel(item, CEnchantments.INFESTATION);
-                                            spawnAllies(player, en, EntityType.ENDERMITE, power * 3);
-                                            spawnAllies(player, en, EntityType.SILVERFISH, power * 3);
-                                        }
-                                    }
-                                }
-                            }
-                        } else {
-                            attackEnemy(player, en);
-                        }
-                    }
-                    if (e.getEntity() instanceof LivingEntity && e.getDamager() instanceof Player) {// Player attacks
-                        Player player = (Player) e.getDamager();
-                        LivingEntity en = (LivingEntity) e.getEntity();
-                        if (mobs.containsKey(player) && mobs.get(player).contains(en)) {// If player hurts ally
-                            e.setCancelled(true);
-                            return;
-                        }
-                        if (!mobs.containsKey(player)) {
-                            for (ItemStack item : player.getEquipment().getArmorContents()) {
-                                // Spawn allies when attacking
-                                if (ce.hasEnchantments(item) && !mobs.containsKey(player) && (!mobTimer.containsKey(player) || (mobTimer.containsKey(player) && rightNow.after(mobTimer.get(player))))) {
-                                    if (CEnchantments.TAMER.isActivated() && ce.hasEnchantment(item, CEnchantments.TAMER)) {
-                                        int power = ce.getLevel(item, CEnchantments.TAMER);
-                                        spawnAllies(player, en, EntityType.WOLF, power);
-                                    }
-                                    if (CEnchantments.GUARDS.isActivated() && ce.hasEnchantment(item, CEnchantments.GUARDS)) {
-                                        int power = ce.getLevel(item, CEnchantments.GUARDS);
-                                        spawnAllies(player, en, EntityType.IRON_GOLEM, power);
-                                    }
-                                    if (en instanceof Player) {
-                                        if (CEnchantments.NECROMANCER.isActivated() && ce.hasEnchantment(item, CEnchantments.NECROMANCER)) {
-                                            int power = ce.getLevel(item, CEnchantments.NECROMANCER);
-                                            spawnAllies(player, en, EntityType.ZOMBIE, power * 2);
-                                        }
-                                        if (CEnchantments.INFESTATION.isActivated() && ce.hasEnchantment(item, CEnchantments.INFESTATION)) {
-                                            int power = ce.getLevel(item, CEnchantments.INFESTATION);
-                                            spawnAllies(player, en, EntityType.ENDERMITE, power * 3);
-                                            spawnAllies(player, en, EntityType.SILVERFISH, power * 3);
-                                        }
-                                    }
-                                }
-                            }
-                        } else {
-                            attackEnemy(player, en);
-                        }
-                    }
-                }
-            }
-        }.runTaskAsynchronously(ce.getPlugin());
-    }
-    
-    @EventHandler
-    public void onAllyDeath(EntityDeathEvent e) {
-        for (Entry<Player, List<LivingEntity>> mobList : mobs.entrySet()) {
-            if (mobList.getValue().contains(e.getEntity())) {
-                e.setDroppedExp(0);
-                e.getDrops().clear();
-            }
-        }
-    }
-    
-    @EventHandler
-    public void onAllyDespawn(ChunkUnloadEvent e) {
-        if (e.getChunk().getEntities().length > 0) {
-            for (Entity entity : e.getChunk().getEntities()) {
-                if (entity instanceof LivingEntity) {
-                    LivingEntity livingEntity = (LivingEntity) entity;
-                    for (Entry<Player, List<LivingEntity>> mobList : mobs.entrySet()) {
-                        if (mobList.getValue().contains(livingEntity)) {
-                            mobList.getValue().remove(livingEntity);
-                            livingEntity.remove();
-                        }
-                    }
-                }
-            }
-        }
-    }
-    
-    @EventHandler
-    public void onPlayerLeave(PlayerQuitEvent e) {
-        Player player = e.getPlayer();
-        if (mobs.containsKey(player)) {
-            for (LivingEntity en : mobs.get(player)) {
-                en.remove();
-            }
-            mobs.remove(player);
-        }
-    }
-    
     private void useHellForge(Player player, ItemStack item) {
         if (ce.hasEnchantment(item, CEnchantments.HELLFORGED)) {
             int armorDurability = Version.isNewer(Version.v1_12_R1) ? ((Damageable) item.getItemMeta()).getDamage() : item.getDurability();
@@ -697,89 +564,6 @@ public class Armor implements Listener {
                         }
                     }
                 }.runTask(ce.getPlugin());
-            }
-        }
-    }
-    
-    private void spawnAllies(final Player player, LivingEntity enemy, EntityType mob, Integer amount) {
-        Calendar cal = Calendar.getInstance();
-        cal.add(Calendar.MINUTE, 2);
-        mobTimer.put(player, cal);
-        for (int i = 0; i < amount; i++) {
-            LivingEntity entity = (LivingEntity) player.getWorld().spawnEntity(player.getLocation(), mob);
-            switch (mob) {
-                case WOLF:
-                    entity.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(16);
-                    entity.setHealth(16);
-                    Support.noStack(entity);
-                    break;
-                case IRON_GOLEM:
-                    entity.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(200);
-                    entity.setHealth(200);
-                    Support.noStack(entity);
-                    entity.setCanPickupItems(false);
-                    break;
-                case ZOMBIE:
-                    entity.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(45);
-                    entity.setHealth(45);
-                    Support.noStack(entity);
-                    entity.setCanPickupItems(false);
-                    break;
-                case ENDERMITE:
-                case SILVERFISH:
-                    entity.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(10);
-                    entity.setHealth(10);
-                    Support.noStack(entity);
-                    break;
-                default:
-                    break;
-            }
-            entity.setCustomName(Methods.color("&6" + player.getName() + "'s " + entity.getName()));
-            entity.setCustomNameVisible(true);
-            if (!mobs.containsKey(player)) {
-                mobs.put(player, new ArrayList<>(Arrays.asList(entity)));
-            } else {
-                mobs.get(player).add(entity);
-            }
-        }
-        attackEnemy(player, enemy);
-        Bukkit.getScheduler().runTaskLater(ce.getPlugin(), () -> {
-            if (mobs.containsKey(player)) {
-                for (LivingEntity entity : mobs.get(player)) {
-                    entity.remove();
-                }
-                mobs.remove(player);
-            }
-        }, 60 * 20);
-    }
-    
-    private void attackEnemy(Player player, LivingEntity enemy) {
-        if (mobs.containsKey(player)) {
-            for (LivingEntity ally : mobs.get(player)) {
-                switch (ally.getType()) {
-                    case IRON_GOLEM:
-                        IronGolem iron = (IronGolem) ally;
-                        iron.setTarget(enemy);
-                        break;
-                    case WOLF:
-                        Wolf wolf = (Wolf) ally;
-                        wolf.setTarget(enemy);
-                        break;
-                    case ZOMBIE:
-                        Zombie zom = (Zombie) ally;
-                        zom.setTarget(enemy);
-                        break;
-                    case ENDERMITE:
-                        Endermite mite = (Endermite) ally;
-                        mite.setTarget(enemy);
-                        break;
-                    case SILVERFISH:
-                        Silverfish sfish = (Silverfish) ally;
-                        sfish.setTarget(enemy);
-                        break;
-                    default:
-                        break;
-                }
             }
         }
     }

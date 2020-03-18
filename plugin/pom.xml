@@ -30,6 +30,22 @@
         </dependency>
         <dependency>
             <groupId>me.badbones69</groupId>
+            <artifactId>crazyenchantments-factions</artifactId>
+            <version>1.8-Dev-Build-v8.1</version>
+            <type>jar</type>
+            <scope>compile</scope>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>me.badbones69</groupId>
+            <artifactId>crazyenchantments-saber-factions</artifactId>
+            <version>1.8-Dev-Build-v8.1</version>
+            <type>jar</type>
+            <scope>compile</scope>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>me.badbones69</groupId>
             <artifactId>crazyenchantments-api</artifactId>
             <version>1.8-Dev-Build-v8.1</version>
             <type>jar</type>
